@@ -1,2 +1,2 @@
 # reinforcement-learning-projects
-A collection of small-cale reinforcement learning projects.
+A collection of small-scale reinforcement learning projects.
