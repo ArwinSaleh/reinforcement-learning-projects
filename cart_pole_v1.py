@@ -33,12 +33,12 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # TAU is the update rate of the target network
 # LR is the learning rate of the ``AdamW`` optimizer
 BATCH_SIZE = 256
-GAMMA = 0.99
+GAMMA = 0.98
 EPS_START = 0.9
 EPS_END = 0.05
-EPS_DECAY = 1000
+EPS_DECAY = 100
 TAU = 0.005
-LR = 1e-4
+LR = 1e-3
 
 # Get number of actions from gym action space
 n_actions = env.action_space.n
@@ -50,7 +50,7 @@ policy_net = DQN(n_observations, n_actions).to(device)
 target_net = DQN(n_observations, n_actions).to(device)
 target_net.load_state_dict(policy_net.state_dict())
 
-optimizer = optim.AdamW(policy_net.parameters(), lr=LR, amsgrad=True)
+optimizer = optim.Adam(policy_net.parameters(), lr=LR, amsgrad=True)
 memory = ReplayMemory(10000)
 
 
@@ -162,7 +162,7 @@ def optimize_model():
 
 
 if torch.cuda.is_available():
-    num_episodes = 600
+    num_episodes = 300
 else:
     num_episodes = 50
 
