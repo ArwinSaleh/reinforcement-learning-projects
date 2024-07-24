@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 
-N_HIDDEN = 1000
+N_HIDDEN = 128
 
 
 class DQN(nn.Module):
