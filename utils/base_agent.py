@@ -65,7 +65,7 @@ class BaseGameAgent(ABC):
         self.target_net.load_state_dict(self.policy_net.state_dict())
 
         # Init optimizer.
-        self.optimizer = optim.AdamW(
+        self.optimizer = optim.Adam(
             self.policy_net.parameters(), lr=self._lr, amsgrad=True
         )
 
