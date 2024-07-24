@@ -6,7 +6,6 @@ from itertools import count
 from pathlib import Path
 from typing import List
 
-import matplotlib
 import torch
 from matplotlib import pyplot as plt
 from snake import Actions, Snake
@@ -16,10 +15,8 @@ from utils.base_agent import BaseGameAgent
 from utils.plotting import plot_scores
 
 # WORLD_SIZE is the size of the world, which is a square grid.
-# MAX_REWARD is the maximum reward that can be obtained.
 # N_EPISODES is the number of episodes to train the agent.
 WORLD_SIZE: int = 10
-MAX_REWARD = 100000
 N_EPISODES = 10000
 
 
@@ -36,6 +33,14 @@ class SnakeGameAgent(BaseGameAgent):
             n_observations=len(self.snake.get_state()),
             n_actions=len(Actions),
             device=self._device,
+            batch_size=128,
+            gamma=0.999,
+            eps_start=0.99,
+            eps_end=0.001,
+            eps_decay=500,
+            tau=0.0001,
+            lr=0.0001,
+            memory_capacity=10000,
         )
 
         # Init curses.
@@ -76,18 +81,21 @@ class SnakeGameAgent(BaseGameAgent):
                 if self.snake.is_snake_eat_food():
                     self.snake.eat_food()
                     self.snake.generate_food()
-                    reward = torch.tensor([10.0], device=self._device)
+                    reward = torch.tensor([0.999], device=self._device)
                 elif self.snake.is_collision():
-                    reward = torch.tensor([-10.0], device=self._device)
+                    reward = torch.tensor([-0.999], device=self._device)
                     done = True
                 else:
                     if self.snake.distance_to_food < previous_distance_to_food:
-                        reward = torch.tensor([1.0], device=self._device)
+                        reward = torch.tensor([0.005], device=self._device)
                     else:
-                        reward = torch.tensor([-1.0], device=self._device)
+                        reward = torch.tensor([0.000], device=self._device)
 
                 # Add a small positive reward for surviving each step.
-                reward += torch.tensor([0.1], device=self._device)
+                reward += torch.tensor([0.001], device=self._device)
+
+                # Clamp the reward to be between -1 and 1.
+                reward = torch.clamp(reward, -1.000, 1.000)
 
                 # Get next state.
                 next_state = torch.tensor(
