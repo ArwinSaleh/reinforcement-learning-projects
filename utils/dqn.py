@@ -1,3 +1,6 @@
+from pathlib import Path
+
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
@@ -16,3 +19,9 @@ class DQN(nn.Module):
         x = F.relu(self.layer1(x))
         x = F.relu(self.layer2(x))
         return self.layer3(x)
+
+    def load(self, model_path: Path) -> None:
+        self.load_state_dict(torch.load(model_path))
+
+    def save(self, model_path: Path) -> None:
+        torch.save(self.state_dict(), model_path)
