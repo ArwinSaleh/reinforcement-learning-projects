@@ -31,6 +31,7 @@ class Pong:
         self.ball_speed_y: int = 5
         self.score_left: int = 0
         self.score_right: int = 0
+        self.is_done: bool = False
 
     def reset(self):
         self.paddle_left_y = self.height // 2 - self.paddle_height // 2
@@ -39,21 +40,27 @@ class Pong:
         self.ball_y = self.height // 2
         self.ball_speed_x = 5
         self.ball_speed_y = 5
+        self.is_done = True
 
     def step(self, action: Actions):
+        self.is_done = False
         self.screen.fill((0, 0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
 
         if action == Actions.LEFT_UP:
-            self.paddle_left_y -= self.paddle_speed
+            if self.paddle_left_y - self.paddle_speed >= 0:
+                self.paddle_left_y -= self.paddle_speed
         elif action == Actions.LEFT_DOWN:
-            self.paddle_left_y += self.paddle_speed
+            if self.paddle_left_y + self.paddle_speed + self.paddle_height <= self.height:
+                self.paddle_left_y += self.paddle_speed
         elif action == Actions.RIGHT_UP:
-            self.paddle_right_y -= self.paddle_speed
+            if self.paddle_right_y - self.paddle_speed >= 0:
+                self.paddle_right_y -= self.paddle_speed
         elif action == Actions.RIGHT_DOWN:
-            self.paddle_right_y += self.paddle_speed
+            if self.paddle_right_y + self.paddle_speed + self.paddle_height <= self.height:
+                self.paddle_right_y += self.paddle_speed
 
         pygame.draw.rect(
             self.screen,
@@ -125,9 +132,6 @@ class Pong:
             [self.paddle_left_y, self.paddle_right_y, self.ball_x, self.ball_y],
             dtype=np.int32,
         )
-    
-    def is_done(self) -> bool:
-        return self.score_left == 10 or self.score_right == 10
 
 
 if __name__ == "__main__":

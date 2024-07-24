@@ -53,8 +53,8 @@ class PongGameAgent(BaseGameAgent):
                 self.pong.step(Actions(action.item()))
 
                 # Observe new state.
-                if not self.pong.is_done():
-                    reward = 1.0
+                if not self.pong.is_done:
+                    reward = 0.001
                     next_state = self.pong.get_state()
                     next_state = torch.tensor(
                         next_state, dtype=torch.float32, device=self._device
@@ -76,15 +76,15 @@ class PongGameAgent(BaseGameAgent):
 
                 # Perform one step of the optimization (on the target network).
                 self.optimize_model()
+                
+                # Update the target network.
+                self.update_target_net()
 
-                if self.pong.is_done():
+                if self.pong.is_done:
                     # Save the duration of the current episode.
                     episode_durations.append(t + 1)
                     plot_scores(episode_durations, show_result=False)
                     break
-
-            # Update the target network.
-            self.update_target_net()
 
 if __name__ == "__main__":
     agent = PongGameAgent()
